@@ -40,22 +40,23 @@ app.get("/", (request, response) => {
 
 app.post("/", (request, response) => {
     try {
-        if (!request.body.name || !request.body.desc) {
+        console.log(request.body)
+        const { name, desc } = request.body;
+        if (!name || !desc) {
             throw "Empty or Invalid Input";
         }
         else {
             const todo = new Todo();
             todo.id = id;
-            todo.name = request.body.name;
-            todo.desc = request.body.desc;
+            todo.name = name;
+            todo.desc = desc;
             console.log(todo.id);
             console.log(todo.name);
             console.log(todo.desc);
             id++;
 
             TodoList.push(todo); //Todo Added to Object Array
-            // console.log("Todo Added Successfully");
-            response.redirect('/');
+            response.status(200).json({ message: "To-do added successfully" });
         }
 
     } catch (err) {
@@ -68,10 +69,9 @@ app.post("/", (request, response) => {
 
 
 app.get("/getTodos", (request, response) => {
-    if(TodoList.length){
-        // response.render("todo-list", { TodoList });
-        response.status(200).json({TodoArray: TodoList});
-    }else{
+    if (TodoList.length) {
+        response.status(200).json({ TodoArray: TodoList });
+    } else {
         response.status(404).json({ message: "Todo Array is Empty" });
     }
 })
@@ -86,11 +86,7 @@ app.get("/getATodo/:id", (request, response) => {
 
         const todo = TodoList.find(todo => todo.id == id);
         if (todo) {
-            let TodoList = [];
-            TodoList.push(todo);
-            console.log(TodoList);
-            // response.render("todo-list", { TodoList });
-            response.status(200).json({TodoArray: TodoList});
+            response.status(200).json({ Todo: todo });
         } else {
             response.status(404).json({ message: "To-do with id " + id + " is not present" });
         }
@@ -110,7 +106,7 @@ app.delete("/delete/:id", (request, response) => {
         const deleted = TodoList.find(todo => todo.id == id)
         if (deleted) {
             TodoList = TodoList.filter(todo => todo.id != id);
-            response.redirect(303, '/getTodos');
+            response.status(200).json({ message: "To-do deleted successfully" });
         } else {
             response.status(404).json({ message: "Invalid Todo Id" });
         }
@@ -124,29 +120,29 @@ app.delete("/delete/:id", (request, response) => {
 
 
 
-app.put("/update/:id", (request, response) => {
+// app.put("/update/:id", (request, response) => {
 
-    if (TodoList.length) {
-        const { id } = request.params;
-        var name;
-        var desc;
+//     if (TodoList.length) {
+//         const { id } = request.params;
+//         var name;
+//         var desc;
 
-        const updateTodo = TodoList.find(todo => todo.id == id)
-        if (updateTodo) {
-            const obj = new paramObj();
-            obj.desc = updateTodo.desc;
-            obj.name = updateTodo.name;
-            obj.btn = true;
-            response.render("index", { obj });
-        } else {
-            response.status(404).json({ message: "Invalid Todo Id" });
-        }
-    } else {
-        response.status(404).json({ message: "Todo Array is Empty" });
-    }
+//         const updateTodo = TodoList.find(todo => todo.id == id)
+//         if (updateTodo) {
+//             const obj = new paramObj();
+//             obj.desc = updateTodo.desc;
+//             obj.name = updateTodo.name;
+//             obj.btn = true;
+//             response.render("index", { obj });
+//         } else {
+//             response.status(404).json({ message: "Invalid Todo Id" });
+//         }
+//     } else {
+//         response.status(404).json({ message: "Todo Array is Empty" });
+//     }
 
 
-});
+// });
 
 
 
@@ -154,29 +150,29 @@ app.post("/update/:id", (request, response) => {
     if (TodoList.length) {
 
         console.log(request.body)
-        const { name, desc } = request.body
+        const { name, desc } = request.body;
         const id = request.params.id;
         console.log("In Post method of Update");
-        // console.log(name);
-        // console.log(desc);
         try {
             if (!desc || !name) {//when inputs are empty
                 throw "Empty or Invalid Input";
             }
             else {
-                let i = 0;
-                for (; i < TodoList.length; i++) {
-                    if (TodoList[i].id == id) {
-                        break;
+                let i = -1;
+                TodoList.forEach(function (todo) {
+                    if (todo.id == id) {
+                        i = TodoList.indexOf(todo);
                     }
-                    if (++i == TodoList.length) {//when todo with id not found
-                        throw ("To-do with id:" + id + " not found");
-                    }
+                })
+                if (i == -1) {
+                    throw ("To-do with id:" + id + " not found");
                 }
-                TodoList[i].name = name;
-                TodoList[i].desc = desc;
-                response.status(200).json({ message: "Successfully updated" })
-                // response.redirect(303, '/getTodos');
+                else {
+                    TodoList[i].name = name;
+                    TodoList[i].desc = desc;
+                    response.status(200).json({ message: "Successfully updated" });
+                }
+
             }
 
         } catch (err) {
