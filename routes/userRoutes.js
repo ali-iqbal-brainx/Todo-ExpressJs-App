@@ -1,9 +1,10 @@
 const userController = require("../controllers/userController");
 const router = require("express").Router();
 const mongoose = require('mongoose');
+const constants = require("../public/constants");
 
 
-mongoose.connect("mongodb://localhost:27017/tododb", { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(constants.MONGO_DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log("Connection Successful..."))
     .catch((err) => console.log("Error connecting DB :", err));
 

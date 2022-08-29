@@ -9,6 +9,10 @@ const todoSchema = new Schema({
     },
     desc: {
         type: String
+    },
+    isDone:{
+        type: Boolean,
+        require: true
     }
 });
 
