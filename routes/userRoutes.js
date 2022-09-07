@@ -1,18 +1,23 @@
+require('dotenv').config();
 const userController = require("../controllers/userController");
 const router = require("express").Router();
 const mongoose = require('mongoose');
-const constants = require("../public/constants");
+const authentication= require("../src/middleware/auth");
+const { request, response } = require('express');
 
 
-mongoose.connect(constants.MONGO_DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+
+mongoose.connect(process.env.MONGO_DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log("Connection Successful..."))
     .catch((err) => console.log("Error connecting DB :", err));
 
-
-router.post("/", userController.addTodo);
-router.get("/getTodos", userController.getTodos);
-router.get("/getATodo/:id",userController.getATodo);
-router.delete("/delete/:id", userController.deleteTodo);
-router.put("/update/:id", userController.updateATodo);
+router.post("/",authentication.auth, userController.addTodo);
+router.post("/addUser", userController.addUser);
+router.post("/signIn", userController.signIn);
+router.get("/getTodos/:id", authentication.auth, userController.getTodos);
+router.get("/getATodo/:id", authentication.auth, userController.getATodo);
+router.delete("/delete/:id", authentication.auth, userController.deleteTodo);
+router.put("/update/:id", authentication.auth, userController.updateATodo);
+router.get("/logout",authentication.auth, userController.logout);
 
 module.exports = router;

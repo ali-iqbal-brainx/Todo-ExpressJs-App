@@ -13,6 +13,10 @@ const todoSchema = new Schema({
     isDone:{
         type: Boolean,
         require: true
+    },
+    userId:{
+        type: String,
+        require: true
     }
 });
 

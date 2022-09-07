@@ -13,7 +13,8 @@ const getATodoQuery = async (id) => {
                 '_id': 1,
                 'name': 1,
                 'desc': 1,
-                'isDone': 1
+                'isDone': 1,
+                'userId': 1
             }
         }
     ]);
