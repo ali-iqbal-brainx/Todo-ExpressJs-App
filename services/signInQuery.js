@@ -1,15 +1,19 @@
 const UR = require("../models/user");
 const bcrypt = require('bcryptjs');
 
-
-
 const signInQuery = async (email, password, request, response) => {
-    try {
-        const user = await UR.findOne({
-            email: email,
-        });
-        if (user) {
-            const isMatch = await bcrypt.compare(password, user.password);
+    let isMatch = false;
+    console.log("Email pass", email, password);
+
+    const user = await UR.findOne({
+        email: email,
+    });
+    console.log("User :", user);
+    if (user) {
+        isMatch = await bcrypt.compare(password, user.password);
+
+        if (isMatch) {
+            //generate token 
             const token = await user.generateAuthToken();
             console.log("The token Part :", token);
             response.cookie("jwt", token, {
@@ -17,20 +21,17 @@ const signInQuery = async (email, password, request, response) => {
                 httpOnly: true,
                 // secure: true
             })
-            if(isMatch){
-                const obj={
-                    token: token,
-                    userId: user._id
-                }
-                return obj;
-            }else{
-                return false;
+            //return user obj
+            const obj = {
+                token: token,
+                userId: user._id
             }
+            return obj;
         } else {
-            throw "Incorrect Email";
+            console.log("In false");
+            return false;
         }
-    } catch (err) {
-        console.log(err);
+    } else {
         return "Incorrect Email";
     }
 
