@@ -1,13 +1,11 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const { request, response } = require('express');
 const port = 3000;
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 var id = 0;
 var TodoList = [];
